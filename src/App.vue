@@ -1,14 +1,17 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import TheNavbar from './components/TheNavbar.vue';
+import TheNavbar from './components/TheNavbar.vue'
 </script>
 
 <template>
   <the-navbar></the-navbar>
   <div class="container">
-    <RouterView />
+    <Suspense>
+      <RouterView />
+    </Suspense>
   </div>
 </template>
 
 <style>
-@import '@/assets/style.css';</style>
+@import '@/assets/style.css';
+</style>

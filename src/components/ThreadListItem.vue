@@ -47,7 +47,7 @@ const props = defineProps<{
 const { thread } = props
 const { users } = storeToRefs(useUsersStore())
 
-const userById = (userId) => findById(users.value, userId)
+const userById = (userId) => findById(users.value, userId) || {}
 </script>
 
 <style scoped></style>

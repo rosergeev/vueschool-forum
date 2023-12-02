@@ -14,6 +14,7 @@ export const useThreadsStore = defineStore('ThreadsStore', {
   getters: {
     thread: (state) => (id) => {
       const thread = findById(state.threads, id)
+      if (!thread) return {}
       const { users } = useUsersStore()
       return {
         ...thread,

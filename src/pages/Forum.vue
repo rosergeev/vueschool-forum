@@ -1,5 +1,5 @@
 <template>
-  <div class="col-full push-top">
+  <div class="col-full push-top" v-if="forum">
     <div class="forum-header">
       <div class="forum-details">
         <h1>{{ forum.name }}</h1>
@@ -19,9 +19,10 @@
 
 <script setup lang="ts">
 import ThreadList from '../components/ThreadList.vue'
-import { computed } from 'vue'
+import { computed, onBeforeMount } from 'vue'
 import { useForumsStore } from '@/stores/ForumsStore'
 import { useThreadsStore } from '../stores/ThreadsStore'
+import { useUsersStore } from '@/stores/UsersStore'
 import { storeToRefs } from 'pinia'
 import { findById } from '@/helpers'
 
@@ -29,15 +30,31 @@ const { id } = defineProps<{
   id: string
 }>()
 
-const threadStore = useThreadsStore()
-const { forums } = storeToRefs(useForumsStore())
-const { threads, thread } = storeToRefs(threadStore)
+const threadsStore = useThreadsStore()
+const forumsStore = useForumsStore()
+const usersStore = useUsersStore()
+
+const { forums } = storeToRefs(forumsStore)
+const { thread } = storeToRefs(threadsStore)
+
+const { fetchForum } = forumsStore
+const { fetchThreads } = threadsStore
+const { fetchUsers } = usersStore
 // const {thread}= threadStore;
 
 const forum = computed(() => findById(forums.value, id))
-const filteredThreads = computed(() =>
-  forum.value.threads.map((threadId) => thread.value(threadId))
-)
+const filteredThreads = computed(() => {
+  if (!forum) return []
+  return forum.value.threads.map((threadId) => thread.value(threadId))
+})
+
+const initDBData = async () => {
+  const forum = await fetchForum(id)
+  const threads = await fetchThreads(forum.threads)
+  await fetchUsers(threads.map((thread) => thread.userId))
+}
+
+await initDBData()
 </script>
 
 <style scoped></style>
