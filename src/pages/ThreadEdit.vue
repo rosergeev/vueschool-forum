@@ -1,5 +1,5 @@
 <template>
-  <div class="col-full push-top">
+  <div v-if="thread && text" class="col-full push-top">
     <h1>
       Editing <i>{{ thread.title }}</i>
     </h1>
@@ -19,9 +19,10 @@ import ThreadEditor from '@/components/ThreadEditor.vue'
 const { id } = defineProps<{
   id: string
 }>()
-const { updateThread } = useThreadsStore()
+const { updateThread, fetchThread } = useThreadsStore()
 const { threads } = storeToRefs(useThreadsStore())
 const { posts } = storeToRefs(usePostsStore())
+const { fetchPost } = usePostsStore()
 const router = useRouter()
 import { findById } from '@/helpers'
 
@@ -39,7 +40,16 @@ const cancel = () => {
 }
 
 const thread = computed(() => findById(threads.value, id))
-const text = computed(() => findById(posts.value, thread.value.posts[0]).text)
+const text = computed(() => {
+  const post = findById(posts.value, thread.value.posts[0])
+  return post ? post.text : ''
+})
+
+const initDBData = async () => {
+  const thread = await fetchThread(id)
+  await fetchPost(thread.posts[0])
+}
+initDBData()
 </script>
 
 <style scoped></style>

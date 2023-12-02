@@ -48,20 +48,20 @@ const router = createRouter({
       path: '/thread/:id',
       name: 'ThreadShow',
       component: ThreadShow,
-      props: true,
-      beforeEnter(to, from, next) {
-        const threadExists = findById(sourceData.threads, to.params.id)
-        if (threadExists) {
-          return next()
-        } else {
-          next({
-            name: 'NotFound',
-            params: { pathMatch: to.path.substring(1).split('/') },
-            query: to.query,
-            hash: to.hash
-          })
-        }
-      }
+      props: true
+      // beforeEnter(to, from, next) {
+      //   const threadExists = findById(sourceData.threads, to.params.id)
+      //   if (threadExists) {
+      //     return next()
+      //   } else {
+      //     next({
+      //       name: 'NotFound',
+      //       params: { pathMatch: to.path.substring(1).split('/') },
+      //       query: to.query,
+      //       hash: to.hash
+      //     })
+      //   }
+      // }
     },
     {
       path: '/forum/:forumId/thread/create',

@@ -1,5 +1,5 @@
 <template>
-  <div class="col-full push-top">
+  <div v-if="forum" class="col-full push-top">
     <h1>
       Create new thread in <i>{{ forum.name }}</i>
     </h1>
@@ -20,7 +20,9 @@ const { forumId } = defineProps<{
   forumId: string
 }>()
 const { createThread } = useThreadsStore()
-const { forums } = storeToRefs(useForumsStore())
+const forumsStore = useForumsStore()
+const { forums } = storeToRefs(forumsStore)
+const { fetchForum } = forumsStore
 const router = useRouter()
 
 const save = async ({ title, text }) => {
@@ -36,7 +38,12 @@ const cancel = () => {
   router.push({ name: 'Forum', params: { id: forumId } })
 }
 
-const forum = computed(() => findById(forums.value, forumId))
+const forum = computed(() => findById(forums.value, forumId) || {})
+
+const initDBData = () => {
+  fetchForum(forumId)
+}
+initDBData()
 </script>
 
 <style scoped></style>

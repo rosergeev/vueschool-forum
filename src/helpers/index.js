@@ -18,6 +18,12 @@ const upsert = (resources, resource) => {
 const makeAppendChildToParent = ({ parent, child }) => {
   return (store, { childId, parentId }) => {
     const resource = findById(store[parent], parentId)
+    if (!resource) {
+      console.warn(
+        `Appending ${child} ${childId} to ${parent} ${parentId} failed because the parent didn't exist`
+      )
+      return
+    }
     resource[child] = resource[child] || []
     if (!resource[child].includes(childId)) {
       resource[child].push(childId)
