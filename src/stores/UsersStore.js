@@ -46,6 +46,9 @@ export const useUsersStore = defineStore('UsersStore', {
     },
     fetchUsers(ids) {
       return fetchItems(this, 'users', ids)
+    },
+    fetchAuthUser() {
+      return this.fetchUser(this.authId)
     }
   }
 })
