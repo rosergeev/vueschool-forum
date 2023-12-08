@@ -1,6 +1,6 @@
 <template>
-  <span :title="humanFriendlyDate()">
-    {{ diffForHumans() }}
+  <span :title="humanFriendlyDate">
+    {{ diffForHumans }}
   </span>
 </template>
 
@@ -8,19 +8,19 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
+import { computed } from 'vue'
 
 dayjs.extend(relativeTime)
 dayjs.extend(localizedFormat)
 
-const { timestamp } = defineProps<{ timestamp: number }>()
+const { timestamp } = defineProps<{ timestamp: number | object }>()
 
-const diffForHumans = () => {
-  return dayjs.unix(timestamp).fromNow()
-}
+const normalizedTimestamp = computed(() => timestamp?.seconds || timestamp)
 
-const humanFriendlyDate = () => {
-  return dayjs.unix(timestamp).format('llll')
-}
+const diffForHumans = computed(() => dayjs.unix(normalizedTimestamp.value).fromNow())
+
+const humanFriendlyDate = computed(() => dayjs.unix(normalizedTimestamp.value).format('llll'))
+
 </script>
 
 <style scoped></style>
