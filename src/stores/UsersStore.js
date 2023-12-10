@@ -24,13 +24,14 @@ export const useUsersStore = defineStore('UsersStore', {
           return usePostsStore().posts.filter((post) => post.userId === user.id)
         },
         get postsCount() {
-          return this.posts.length
+          return user.postsCount || 0
+          // this.posts.length
         },
         get threads() {
           return useThreadsStore().threads.filter((thread) => thread.userId === user.id)
         },
         get threadsCount() {
-          return this.threads.length
+          return user.threads?.length || 0
         }
       }
     }

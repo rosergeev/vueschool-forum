@@ -3,7 +3,16 @@ import { useUsersStore } from '@/stores/UsersStore'
 import { usePostsStore } from '@/stores/PostsStore'
 import { useForumsStore } from '@/stores/ForumsStore'
 import { findById, makeAppendChildToParent } from '@/helpers'
-import { fetchItem, fetchItems } from '../helpers'
+import { fetchItem, fetchItems, setItem } from '../helpers'
+import {
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  getFirestore,
+  serverTimestamp,
+  writeBatch
+} from 'firebase/firestore'
 
 export const useThreadsStore = defineStore('ThreadsStore', {
   state: () => {
@@ -35,26 +44,40 @@ export const useThreadsStore = defineStore('ThreadsStore', {
       return this.threads.filter((thread) => thread.userId === userId)
     },
     async createThread({ text, title, forumId }) {
-      const id = 'ggqq' + Math.random()
       const userStore = useUsersStore()
       const forumStore = useForumsStore()
+      const userId = userStore.authId
+      const publishedAt = serverTimestamp()
 
       const { appendThreadToUser } = userStore
       const { appendThreadToForum } = forumStore
 
-      const userId = userStore.authId
-      const publishedAt = Math.floor(Date.now() / 1000)
+      const db = getFirestore()
+      const batch = writeBatch(db)
+      const threadRef = doc(collection(db, 'threads'))
+      const thread = { forumId, title, publishedAt, userId, id: threadRef.id }
+      const userRef = doc(db, 'users', userId)
+      const forumRef = doc(db, 'forums', forumId)
 
-      const thread = { forumId, title, publishedAt, userId, id }
-      this.threads.push(thread)
+      batch.set(threadRef, thread)
+      batch.update(userRef, {
+        threads: arrayUnion(threadRef.id)
+      })
+      batch.update(forumRef, {
+        threads: arrayUnion(threadRef.id)
+      })
 
-      appendThreadToUser(userStore, { parentId: userId, childId: id })
-      appendThreadToForum(forumStore, { parentId: forumId, childId: id })
+      await batch.commit()
+      const newThread = await getDoc(threadRef)
+
+      setItem(this, 'threads', { ...newThread.data(), id: newThread.id })
+      appendThreadToUser(userStore, { parentId: userId, childId: threadRef.id })
+      appendThreadToForum(forumStore, { parentId: forumId, childId: threadRef.id })
 
       const postsStore = usePostsStore()
-      postsStore.createPost({ text, threadId: id })
+      await postsStore.createPost({ text, threadId: threadRef.id })
 
-      return findById(this.threads, id)
+      return findById(this.threads, threadRef.id)
     },
     async updateThread({ id, title, text }) {
       const thread = findById(this.threads, id)

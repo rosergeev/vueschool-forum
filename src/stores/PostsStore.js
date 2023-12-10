@@ -10,7 +10,8 @@ import {
   arrayUnion,
   writeBatch,
   serverTimestamp,
-  getDoc
+  getDoc,
+  increment
 } from 'firebase/firestore'
 
 export const usePostsStore = defineStore('PostsStore', {
@@ -30,10 +31,14 @@ export const usePostsStore = defineStore('PostsStore', {
       const batch = writeBatch(db)
       const postRef = doc(collection(db, 'posts'))
       const threadRef = doc(db, 'threads', post.threadId)
+      const userRef = doc(db, 'users', userStore.authId)
       batch.set(postRef, post)
       batch.update(threadRef, {
         posts: arrayUnion(postRef.id),
         contributors: arrayUnion(userStore.authId)
+      })
+      batch.update(userRef, {
+        postsCount: increment(1)
       })
       await batch.commit()
       const newPost = await getDoc(postRef)
