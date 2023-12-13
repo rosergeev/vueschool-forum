@@ -1,5 +1,5 @@
 <template>
-  <div class="col-large push-top">
+  <div v-if="thread" class="col-large push-top">
     <h1>
       {{ thread.title }}
       <router-link
@@ -38,7 +38,7 @@ import { useUsersStore } from '../stores/UsersStore'
 import { storeToRefs } from 'pinia'
 
 // import { useRoute } from 'vue-router'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 const threadsStore = useThreadsStore()
 const postsStore = usePostsStore()

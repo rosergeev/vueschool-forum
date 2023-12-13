@@ -3,7 +3,7 @@ import { useUsersStore } from '@/stores/UsersStore'
 import { usePostsStore } from '@/stores/PostsStore'
 import { useForumsStore } from '@/stores/ForumsStore'
 import { findById, makeAppendChildToParent } from '@/helpers'
-import { fetchItem, fetchItems, setItem } from '../helpers'
+import { docToResource, fetchItem, fetchItems, setItem } from '../helpers'
 import {
   arrayUnion,
   collection,
@@ -31,9 +31,11 @@ export const useThreadsStore = defineStore('ThreadsStore', {
           return findById(users, thread?.userId)
         },
         get repliesCount() {
+          if (!thread?.posts) return 0
           return thread?.posts.length - 1
         },
         get contributorsCount() {
+          if (!thread?.contributors) return 0
           return thread?.contributors.length
         }
       }
@@ -83,11 +85,24 @@ export const useThreadsStore = defineStore('ThreadsStore', {
       const thread = findById(this.threads, id)
       const { posts } = storeToRefs(usePostsStore())
       const post = findById(posts.value, thread.posts[0])
+      let newThread = { ...thread, title }
+      let newPost = { ...post, text }
 
-      thread.title = title
-      post.text = text
+      const db = getFirestore()
+      const threadRef = doc(db, 'threads', id)
+      const postRef = doc(db, 'posts', post.id)
+      const batch = writeBatch(db)
+      batch.update(threadRef, newThread)
+      batch.update(postRef, newPost)
+      await batch.commit()
 
-      return thread
+      newThread = await getDoc(threadRef)
+      newPost = await getDoc(postRef)
+
+      setItem(this, 'threads', newThread)
+      setItem(usePostsStore(), 'posts', newPost)
+
+      return docToResource(newThread)
     },
     appendContributorToThread: makeAppendChildToParent({
       parent: 'threads',

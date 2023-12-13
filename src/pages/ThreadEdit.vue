@@ -32,7 +32,7 @@ const save = async ({ title, text }) => {
     title,
     text
   })
-  router.push({ name: 'ThreadShow', params: { id: thread.id } })
+    router.push({ name: 'ThreadShow', params: { id: thread.id } })
 }
 
 const cancel = () => {
@@ -41,7 +41,9 @@ const cancel = () => {
 
 const thread = computed(() => findById(threads.value, id))
 const text = computed(() => {
+  if (!thread.value.posts) return ''
   const post = findById(posts.value, thread.value.posts[0])
+
   return post ? post.text : ''
 })
 

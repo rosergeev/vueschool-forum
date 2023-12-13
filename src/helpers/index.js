@@ -32,7 +32,7 @@ const makeAppendChildToParent = ({ parent, child }) => {
 }
 
 const setItem = (store, resource, item) => {
-  upsert(store[resource], item)
+  upsert(store[resource], docToResource(item))
 }
 
 const fetchItem = (store, resource, id) => {
@@ -50,4 +50,10 @@ const fetchItems = (store, resource, ids) => {
   return Promise.all(ids.map((id) => fetchItem(store, resource, id)))
 }
 
-export { findById, upsert, makeAppendChildToParent, setItem, fetchItem, fetchItems }
+const docToResource = (doc) => {
+  if (typeof doc?.data !== 'function') return doc
+
+  return { ...doc, id: doc.id }
+}
+
+export { findById, upsert, makeAppendChildToParent, setItem, fetchItem, fetchItems, docToResource }
