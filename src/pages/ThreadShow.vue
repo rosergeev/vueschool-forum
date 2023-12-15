@@ -20,7 +20,7 @@
     </p>
     <post-list :posts="threadPosts" />
 
-    <post-editor @@save="addPost" />
+    <post-editor @@save="addPost" :post="{ text: null }" />
   </div>
   <!-- <div v-else class="col-full text-center">
     <h1>This thread does not exist</h1>

@@ -15,10 +15,17 @@
       </div>
 
       <div class="post-content">
-        <div>
-          <p>{{ post.text }}</p>
+        <div class="col-full">
+          <PostEditor v-if="editing === post.id" :post="post" />
+          <p v-else>{{ post.text }}</p>
         </div>
-        <a href="#" style="margin-left: auto; padding-left: 10px;" class="link-unstyled" title="Make a change">
+        <a
+          @click.prevent="toggleEditMode(post.id)"
+          href="#"
+          style="margin-left: auto; padding-left: 10px"
+          class="link-unstyled"
+          title="Make a change"
+        >
           <fa icon="pencil-alt" />
         </a>
       </div>
@@ -31,10 +38,13 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useUsersStore } from '../stores/UsersStore'
 import { storeToRefs } from 'pinia'
+import PostEditor from '@/components/PostEditor.vue'
 
 const { user } = storeToRefs(useUsersStore())
+const editing = ref<string | null>(null)
 
 const props = defineProps<{
   posts: []
@@ -42,6 +52,10 @@ const props = defineProps<{
 
 const userById = (userId) => {
   return user.value(userId)
+}
+
+const toggleEditMode = (id) => {
+  editing.value = id === editing.value ? null : id
 }
 </script>
 

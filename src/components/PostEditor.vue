@@ -2,10 +2,17 @@
   <div class="col-full">
     <form @submit.prevent="save">
       <div class="form-group">
-        <textarea v-model="text" name="" id="" cols="30" rows="10" class="form-input"></textarea>
+        <textarea
+          v-model="postCopy.text"
+          name=""
+          id=""
+          cols="30"
+          rows="10"
+          class="form-input"
+        ></textarea>
       </div>
       <div class="form-action">
-        <button class="btn-blue">Submit post</button>
+        <button class="btn-blue">{{ post.id ? 'Update Post' : 'Submit Post' }}</button>
       </div>
     </form>
   </div>
@@ -14,6 +21,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+const props = defineProps<{
+  post: {}
+}>()
+
+const postCopy = { ...props.post }
 const text = ref('')
 
 const emit = defineEmits<{
@@ -29,13 +41,8 @@ const emit = defineEmits<{
 }>()
 
 const save = () => {
-  const postId = 'gggg' + Math.random()
-  const post = {
-    id: postId,
-    text: text.value
-  }
-  emit('@save', post)
-  text.value = ''
+  emit('@save', postCopy)
+  postCopy.text.value = ''
 }
 </script>
 
