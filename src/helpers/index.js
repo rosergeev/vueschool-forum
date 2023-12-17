@@ -1,4 +1,6 @@
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore'
+import { useAppStore } from '@/stores/AppStore'
+// import { storeToRefs } from 'pinia'
 
 const findById = (resources, id) => {
   if (!resources) return null
@@ -36,13 +38,15 @@ const setItem = (store, resource, item) => {
 }
 
 const fetchItem = (store, resource, id) => {
+  const { appendUnsubsribe } = useAppStore()
   return new Promise((resolve) => {
     const db = getFirestore()
-    onSnapshot(doc(db, resource, id), (itemDoc) => {
+    const unsubscribe = onSnapshot(doc(db, resource, id), (itemDoc) => {
       const item = { ...itemDoc.data(), id: itemDoc.id }
       setItem(store, resource, item)
       resolve(item)
     })
+    appendUnsubsribe(unsubscribe)
   })
 }
 
@@ -56,4 +60,12 @@ const docToResource = (doc) => {
   return { ...doc, id: doc.id }
 }
 
-export { findById, upsert, makeAppendChildToParent, setItem, fetchItem, fetchItems, docToResource }
+export {
+  findById,
+  upsert,
+  makeAppendChildToParent,
+  setItem,
+  fetchItem,
+  fetchItems,
+  docToResource
+}

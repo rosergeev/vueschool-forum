@@ -5,11 +5,12 @@ import ThreadShow from '@/pages/ThreadShow.vue'
 import ThreadCreate from '@/pages/ThreadCreate.vue'
 import ThreadEdit from '@/pages/ThreadEdit.vue'
 import NotFound from '@/pages/NotFound.vue'
-import sourceData from '@/data.json'
+// import sourceData from '@/data.json'
 import Forum from '@/pages/Forum.vue'
 import Category from '@/pages/Category.vue'
 import Profile from '@/pages/Profile.vue'
-import { findById } from '@/helpers'
+import { useAppStore } from '@/stores/AppStore'
+// import { findById } from '@/helpers'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -97,4 +98,8 @@ const router = createRouter({
   }
 })
 
+router.beforeEach(() => {
+  const { unsubscribeAllSnapshots } = useAppStore()
+  unsubscribeAllSnapshots()
+})
 export default router
