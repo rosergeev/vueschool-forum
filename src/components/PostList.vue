@@ -16,10 +16,11 @@
 
       <div class="post-content">
         <div class="col-full">
-          <PostEditor v-if="editing === post.id" :post="post" />
+          <PostEditor v-if="editing === post.id" :post="post" @@save="handleUpdate" />
           <p v-else>{{ post.text }}</p>
         </div>
         <a
+          v-if="post.userId === authId"
           @click.prevent="toggleEditMode(post.id)"
           href="#"
           style="margin-left: auto; padding-left: 10px"
@@ -31,6 +32,7 @@
       </div>
 
       <div class="post-date text-faded">
+        <div v-if="post.edited?.at" class="edition-info">edited</div>
         <app-date :timestamp="post.publishedAt" />
       </div>
     </div>
@@ -40,10 +42,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useUsersStore } from '../stores/UsersStore'
+import { usePostsStore } from '../stores/PostsStore'
 import { storeToRefs } from 'pinia'
 import PostEditor from '@/components/PostEditor.vue'
 
-const { user } = storeToRefs(useUsersStore())
+const { user, authId } = storeToRefs(useUsersStore())
+const { updatePost } = usePostsStore()
 const editing = ref<string | null>(null)
 
 const props = defineProps<{
@@ -56,6 +60,11 @@ const userById = (userId) => {
 
 const toggleEditMode = (id) => {
   editing.value = id === editing.value ? null : id
+}
+
+const handleUpdate = async (post) => {
+  await updatePost(post)
+  editing.value = null
 }
 </script>
 

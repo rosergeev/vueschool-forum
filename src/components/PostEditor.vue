@@ -26,7 +26,6 @@ const props = defineProps<{
 }>()
 
 const postCopy = { ...props.post }
-const text = ref('')
 
 const emit = defineEmits<{
   (
@@ -42,7 +41,7 @@ const emit = defineEmits<{
 
 const save = () => {
   emit('@save', postCopy)
-  postCopy.text.value = ''
+  postCopy.text = ''
 }
 </script>
 

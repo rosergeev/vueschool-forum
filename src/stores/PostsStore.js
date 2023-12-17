@@ -11,7 +11,8 @@ import {
   writeBatch,
   serverTimestamp,
   getDoc,
-  increment
+  increment,
+  updateDoc
 } from 'firebase/firestore'
 
 export const usePostsStore = defineStore('PostsStore', {
@@ -57,6 +58,23 @@ export const usePostsStore = defineStore('PostsStore', {
         childId: userStore.authId,
         parentId: post.threadId
       })
+    },
+    async updatePost({ text, id }) {
+      const userStore = useUsersStore()
+      const db = getFirestore()
+      const post = {
+        text,
+        edited: {
+          at: serverTimestamp(),
+          by: userStore.authId,
+          moderated: false
+        }
+      }
+      const postRef = doc(db, 'posts', id)
+      await updateDoc(postRef, post)
+
+      const updatedPost = getDoc(postRef)
+      setItem(this, 'posts', updatedPost)
     },
     appendPostToThread: makeAppendChildToParent({ parent: 'threads', child: 'posts' }),
     fetchPost(id) {
