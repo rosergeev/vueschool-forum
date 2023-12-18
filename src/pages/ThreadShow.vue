@@ -1,5 +1,5 @@
 <template>
-  <div v-if="thread" class="col-large push-top">
+  <div v-if="ready" class="col-large push-top">
     <h1>
       {{ thread.title }}
       <router-link
@@ -23,9 +23,9 @@
     <post-editor @@save="addPost" :post="{ text: null }" />
   </div>
   <!-- <div v-else class="col-full text-center">
-    <h1>This thread does not exist</h1>
-    <router-link :to="{ name: 'Home' }">Read some cool threads</router-link>
-  </div> -->
+      <h1>This thread does not exist</h1>
+      <router-link :to="{ name: 'Home' }">Read some cool threads</router-link>
+    </div> -->
 </template>
 
 <script setup lang="ts">
@@ -36,6 +36,7 @@ import { useThreadsStore } from '../stores/ThreadsStore'
 import { usePostsStore } from '../stores/PostsStore'
 import { useUsersStore } from '../stores/UsersStore'
 import { storeToRefs } from 'pinia'
+import useAsyncDataStatus from '@/composables/useAsyncDataStatus'
 
 // import { useRoute } from 'vue-router'
 import { computed } from 'vue'
@@ -43,6 +44,8 @@ import { computed } from 'vue'
 const threadsStore = useThreadsStore()
 const postsStore = usePostsStore()
 const usersStore = useUsersStore()
+
+const { ready, fetched } = useAsyncDataStatus()
 
 // const { posts } = storeToRefs(postsStore)
 const { fetchThread } = threadsStore
@@ -77,6 +80,7 @@ const getDBData = async () => {
   const posts = await fetchPosts(dbThread.posts)
   const users = posts.map((post) => post.userId)
   await fetchUsers(users)
+  fetched()
   // dbThread.posts.forEach(async (postId) => {
   //   const dbPost = await fetchPost(postId)
   //   await fetchUser(dbPost.userId)

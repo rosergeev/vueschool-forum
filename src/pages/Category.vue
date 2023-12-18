@@ -1,6 +1,8 @@
 <template>
-  <h1>{{ category.name }}</h1>
-  <ForumList :title="category.name" :forums="getForumsForCategory(category)" />
+  <div v-if="ready" class="container col-full">
+    <h1>{{ category.name }}</h1>
+    <ForumList :title="category.name" :forums="getForumsForCategory(category)" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -10,6 +12,7 @@ import { useCategoriesStore } from '@/stores/CategoriesStore'
 import { useForumsStore } from '@/stores/ForumsStore'
 import { storeToRefs } from 'pinia'
 import { findById } from '@/helpers'
+import useAsyncDataStatus from '@/composables/useAsyncDataStatus'
 
 const { id } = defineProps<{
   id: string
@@ -17,6 +20,8 @@ const { id } = defineProps<{
 
 const categoriesStore = useCategoriesStore()
 const forumsStore = useForumsStore()
+
+const { ready, fetched } = useAsyncDataStatus()
 
 const { categories } = storeToRefs(categoriesStore)
 const { forums } = storeToRefs(forumsStore)
@@ -32,6 +37,7 @@ const getForumsForCategory = (category) => {
 const initDBData = async () => {
   const category = await fetchCategory(id)
   await fetchForums(category.forums)
+  fetched()
 }
 await initDBData()
 </script>

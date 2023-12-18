@@ -1,5 +1,5 @@
 <template>
-  <div v-if="forum" class="col-full push-top">
+  <div v-if="ready" class="col-full push-top">
     <h1>
       Create new thread in <i>{{ forum.name }}</i>
     </h1>
@@ -15,6 +15,7 @@ import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import ThreadEditor from '@/components/ThreadEditor.vue'
 import { findById } from '@/helpers'
+import useAsyncDataStatus from '@/composables/useAsyncDataStatus'
 
 const { forumId } = defineProps<{
   forumId: string
@@ -24,6 +25,8 @@ const forumsStore = useForumsStore()
 const { forums } = storeToRefs(forumsStore)
 const { fetchForum } = forumsStore
 const router = useRouter()
+
+const { ready, fetched } = useAsyncDataStatus()
 
 const save = async ({ title, text }) => {
   const thread = await createThread({
@@ -42,6 +45,7 @@ const forum = computed(() => findById(forums.value, forumId) || {})
 
 const initDBData = () => {
   fetchForum(forumId)
+  fetched()
 }
 initDBData()
 </script>

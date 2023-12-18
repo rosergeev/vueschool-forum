@@ -1,19 +1,21 @@
 <template>
-  <div class="col-full push-top" v-if="forum">
-    <div class="forum-header">
-      <div class="forum-details">
-        <h1>{{ forum.name }}</h1>
-        <p class="text-lead">{{ forum.description }}</p>
+  <div v-if="ready" class="container col-full">
+    <div class="col-full push-top" v-if="forum">
+      <div class="forum-header">
+        <div class="forum-details">
+          <h1>{{ forum.name }}</h1>
+          <p class="text-lead">{{ forum.description }}</p>
+        </div>
+        <router-link
+          :to="{ name: 'ThreadCreate', params: { forumId: forum.id } }"
+          class="btn-green btn-small"
+          >Start a thread</router-link
+        >
       </div>
-      <router-link
-        :to="{ name: 'ThreadCreate', params: { forumId: forum.id } }"
-        class="btn-green btn-small"
-        >Start a thread</router-link
-      >
     </div>
-  </div>
-  <div class="col-full push-top">
-    <ThreadList :threads="filteredThreads" />
+    <div class="col-full push-top">
+      <ThreadList :threads="filteredThreads" />
+    </div>
   </div>
 </template>
 
@@ -25,6 +27,7 @@ import { useThreadsStore } from '../stores/ThreadsStore'
 import { useUsersStore } from '@/stores/UsersStore'
 import { storeToRefs } from 'pinia'
 import { findById } from '@/helpers'
+import useAsyncDataStatus from '@/composables/useAsyncDataStatus'
 
 const { id } = defineProps<{
   id: string
@@ -36,6 +39,8 @@ const usersStore = useUsersStore()
 
 const { forums } = storeToRefs(forumsStore)
 const { thread } = storeToRefs(threadsStore)
+
+const { ready, fetched } = useAsyncDataStatus()
 
 const { fetchForum } = forumsStore
 const { fetchThreads } = threadsStore
@@ -52,6 +57,7 @@ const initDBData = async () => {
   const forum = await fetchForum(id)
   const threads = await fetchThreads(forum.threads)
   await fetchUsers(threads.map((thread) => thread.userId))
+  fetched()
 }
 
 await initDBData()

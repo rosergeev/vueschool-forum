@@ -1,6 +1,8 @@
 <template>
-  <h1 class="push-top">Welcome to the Forum</h1>
-  <CategoryList :categories="categories" ref="el" />
+  <div v-if="ready" class="container col-full">
+    <h1 class="push-top">Welcome to the Forum</h1>
+    <CategoryList :categories="categories" ref="el" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -10,6 +12,7 @@ import CategoryList from '../components/CategoryList.vue'
 import { useCategoriesStore } from '../stores/CategoriesStore'
 import { useForumsStore } from '../stores/ForumsStore'
 import { onBeforeMount, onMounted } from 'vue'
+import useAsyncDataStatus from '@/composables/useAsyncDataStatus'
 
 const categoriesStore = useCategoriesStore()
 const forumsStore = useForumsStore()
@@ -17,7 +20,8 @@ const forumsStore = useForumsStore()
 const { categories } = storeToRefs(categoriesStore)
 const { fetchForums } = forumsStore
 
-console.log('before create', categories.value)
+const { ready, fetched } = useAsyncDataStatus()
+// console.log('before create', categories.value)
 
 const initDBData = async () => {
   const categories = await categoriesStore.fetchAllCategories()
@@ -27,6 +31,7 @@ const initDBData = async () => {
 
 onBeforeMount(async () => {
   await initDBData()
+  fetched()
 })
 
 const el = ref()

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="thread && text" class="col-full push-top">
+  <div v-if="ready" class="col-full push-top">
     <h1>
       Editing <i>{{ thread.title }}</i>
     </h1>
@@ -15,6 +15,8 @@ import { usePostsStore } from '@/stores/PostsStore'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import ThreadEditor from '@/components/ThreadEditor.vue'
+import { findById } from '@/helpers'
+import useAsyncDataStatus from '@/composables/useAsyncDataStatus'
 
 const { id } = defineProps<{
   id: string
@@ -24,7 +26,8 @@ const { threads } = storeToRefs(useThreadsStore())
 const { posts } = storeToRefs(usePostsStore())
 const { fetchPost } = usePostsStore()
 const router = useRouter()
-import { findById } from '@/helpers'
+
+const { ready, fetched } = useAsyncDataStatus()
 
 const save = async ({ title, text }) => {
   const thread = await updateThread({
@@ -32,7 +35,7 @@ const save = async ({ title, text }) => {
     title,
     text
   })
-    router.push({ name: 'ThreadShow', params: { id: thread.id } })
+  router.push({ name: 'ThreadShow', params: { id: thread.id } })
 }
 
 const cancel = () => {
@@ -50,6 +53,7 @@ const text = computed(() => {
 const initDBData = async () => {
   const thread = await fetchThread(id)
   await fetchPost(thread.posts[0])
+  fetched()
 }
 initDBData()
 </script>
