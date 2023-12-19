@@ -6,13 +6,16 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onUnmounted, ref } from 'vue'
+import { onBeforeUnmount, onUnmounted, ref, onBeforeMount, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import CategoryList from '../components/CategoryList.vue'
 import { useCategoriesStore } from '../stores/CategoriesStore'
 import { useForumsStore } from '../stores/ForumsStore'
-import { onBeforeMount, onMounted } from 'vue'
 import useAsyncDataStatus from '@/composables/useAsyncDataStatus'
+
+const emit = defineEmits<{
+  (e: 'ready'): void
+}>()
 
 const categoriesStore = useCategoriesStore()
 const forumsStore = useForumsStore()
@@ -27,6 +30,7 @@ const initDBData = async () => {
   const categories = await categoriesStore.fetchAllCategories()
   const forumIds = categories.map((category) => category.forums).flat()
   await fetchForums(forumIds)
+  emit('ready')
 }
 
 onBeforeMount(async () => {

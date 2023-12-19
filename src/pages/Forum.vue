@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import ThreadList from '../components/ThreadList.vue'
-import { computed, onBeforeMount } from 'vue'
+import { computed } from 'vue'
 import { useForumsStore } from '@/stores/ForumsStore'
 import { useThreadsStore } from '../stores/ThreadsStore'
 import { useUsersStore } from '@/stores/UsersStore'

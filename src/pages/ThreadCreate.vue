@@ -20,6 +20,7 @@ import useAsyncDataStatus from '@/composables/useAsyncDataStatus'
 const { forumId } = defineProps<{
   forumId: string
 }>()
+
 const { createThread } = useThreadsStore()
 const forumsStore = useForumsStore()
 const { forums } = storeToRefs(forumsStore)

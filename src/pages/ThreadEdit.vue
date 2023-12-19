@@ -21,6 +21,7 @@ import useAsyncDataStatus from '@/composables/useAsyncDataStatus'
 const { id } = defineProps<{
   id: string
 }>()
+
 const { updateThread, fetchThread } = useThreadsStore()
 const { threads } = storeToRefs(useThreadsStore())
 const { posts } = storeToRefs(usePostsStore())
