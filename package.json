@@ -2,12 +2,14 @@
   "name": "vueschool-forum",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "db:seed": "firebase firestore:delete --all-collections --force && node firestoreImport"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
@@ -15,6 +17,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.5",
     "dayjs": "^1.11.10",
     "firebase": "^10.6.0",
+    "nprogress": "^0.2.0",
     "pinia": "^2.1.6",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
