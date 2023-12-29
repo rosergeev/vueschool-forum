@@ -15,7 +15,7 @@
 import { RouterView, useRouter } from 'vue-router'
 import TheNavbar from './components/TheNavbar.vue'
 import { useUsersStore } from '@/stores/UsersStore'
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import AppSpinner from '@/components/AppSpinner.vue'
 import NProgress from 'nprogress'
 
@@ -23,13 +23,14 @@ const showPage = ref(false)
 
 const userStore = useUsersStore()
 const { fetchAuthUser } = userStore
+const firebaseApp = inject('firebaseApp')
 
 const initDBData = async () => {
   NProgress.configure({
     speed: 200,
     showSpinner: false
   })
-  await fetchAuthUser()
+  await fetchAuthUser(firebaseApp)
   // showPage.value = true
 }
 

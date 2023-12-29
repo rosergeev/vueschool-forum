@@ -10,7 +10,7 @@ export const useUsersStore = defineStore('UsersStore', {
   state: () => {
     return {
       users: [],
-      authId: 'VXjpr2WHa8Ux4Bnggym8QFLdv5C3'
+      authId: null
     }
   },
   getters: {
@@ -50,13 +50,16 @@ export const useUsersStore = defineStore('UsersStore', {
     fetchUsers(ids) {
       return fetchItems(this, 'users', ids)
     },
-    fetchAuthUser() {
+    fetchAuthUser(firebaseApp) {
+      const auth = getAuth(firebaseApp)
+      const userId = auth.currentUser?.uid
+      if (!userId) {
+        return
+      }
+      this.authId = userId
       return this.fetchUser(this.authId)
     },
     async createUser({ id, email, name, username, avatar = null }) {
-      console.log(
-        `id: ${id}, email: ${email}, name: ${name}, username: ${username}, avatar: ${avatar}`
-      )
       const registeredAt = serverTimestamp()
       const usernameLower = username.toLowerCase()
       email = email.toLowerCase()
@@ -77,7 +80,6 @@ export const useUsersStore = defineStore('UsersStore', {
       username,
       avatar = null
     }) {
-      console.log(email, password, name, username, avatar)
       const auth = getAuth(firebaseApp)
       const result = await createUserWithEmailAndPassword(auth, email, password)
 
