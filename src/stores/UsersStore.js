@@ -4,7 +4,12 @@ import { useThreadsStore } from '@/stores/ThreadsStore'
 import { findById, makeAppendChildToParent } from '@/helpers'
 import { docToResource, fetchItem, fetchItems, setItem } from '../helpers'
 import { doc, getDoc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore'
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
+import {
+  createUserWithEmailAndPassword,
+  signOut,
+  getAuth,
+  signInWithEmailAndPassword
+} from 'firebase/auth'
 
 export const useUsersStore = defineStore('UsersStore', {
   state: () => {
@@ -84,6 +89,15 @@ export const useUsersStore = defineStore('UsersStore', {
       const result = await createUserWithEmailAndPassword(auth, email, password)
 
       await this.createUser({ id: result.user.uid, email, name, username, avatar })
+    },
+    signOut({ firebaseApp }) {
+      const auth = getAuth(firebaseApp)
+      signOut(auth)
+      this.authId = null
+    },
+    async signInWithEmailAndPassword({ firebaseApp, email, password }) {
+      const auth = getAuth(firebaseApp)
+      return await signInWithEmailAndPassword(auth, email, password)
     }
   }
 })

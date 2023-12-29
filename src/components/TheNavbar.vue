@@ -13,7 +13,7 @@
     <nav class="navbar">
       <ul>
         <li v-if="authUser" class="navbar-user">
-          <router-link :to="{name: 'Profile'}">
+          <router-link :to="{ name: 'Profile' }">
             <img
               class="avatar-small"
               :src="authUser.avatar"
@@ -33,6 +33,15 @@
             </ul>
           </div>
         </li>
+        <li v-if="authUser" class="navbar-item">
+          <a @click.prevent="signOut(firebaseApp)">Sign Out</a>
+        </li>
+        <li v-if="!authUser" class="navbar-item">
+          <router-link :to="{ name: 'SignIn' }">Sign In</router-link>
+        </li>
+        <li v-if="!authUser" class="navbar-item">
+          <router-link :to="{ name: 'Register' }">Register</router-link>
+        </li>
       </ul>
     </nav>
   </header>
@@ -41,7 +50,11 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useUsersStore } from '../stores/UsersStore'
+import { inject } from 'vue'
+
+const firebaseApp = inject('firebaseApp')
 const { authUser } = storeToRefs(useUsersStore())
+const { signOut } = useUsersStore()
 </script>
 
 <style scoped></style>

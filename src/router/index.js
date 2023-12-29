@@ -10,6 +10,7 @@ import Forum from '@/pages/Forum.vue'
 import Category from '@/pages/Category.vue'
 import Profile from '@/pages/Profile.vue'
 import Register from '@/pages/Register.vue'
+import SignIn from '@/pages/SignIn.vue'
 import { useAppStore } from '@/stores/AppStore'
 // import { findById } from '@/helpers'
 
@@ -89,6 +90,11 @@ const router = createRouter({
       path: '/register',
       name: 'Register',
       component: Register
+    },
+    {
+      path: '/signin',
+      name: 'SignIn',
+      component: SignIn
     },
     {
       path: '/:pathMatch(.*)*',
