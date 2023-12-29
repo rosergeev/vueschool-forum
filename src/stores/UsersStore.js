@@ -2,7 +2,9 @@ import { defineStore } from 'pinia'
 import { usePostsStore } from '@/stores/PostsStore'
 import { useThreadsStore } from '@/stores/ThreadsStore'
 import { findById, makeAppendChildToParent } from '@/helpers'
-import { fetchItem, fetchItems } from '../helpers'
+import { docToResource, fetchItem, fetchItems, setItem } from '../helpers'
+import { doc, getDoc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore'
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
 
 export const useUsersStore = defineStore('UsersStore', {
   state: () => {
@@ -50,6 +52,36 @@ export const useUsersStore = defineStore('UsersStore', {
     },
     fetchAuthUser() {
       return this.fetchUser(this.authId)
+    },
+    async createUser({ id, email, name, username, avatar = null }) {
+      console.log(
+        `id: ${id}, email: ${email}, name: ${name}, username: ${username}, avatar: ${avatar}`
+      )
+      const registeredAt = serverTimestamp()
+      const usernameLower = username.toLowerCase()
+      email = email.toLowerCase()
+      const user = { avatar, email, name, username, usernameLower, registeredAt }
+      const db = getFirestore()
+      const userRef = doc(db, 'users', id)
+      await setDoc(userRef, user)
+      const newUser = await getDoc(userRef)
+      setItem(this, 'users', newUser)
+
+      return docToResource(newUser)
+    },
+    async registerUserWithEmailAndPassword({
+      firebaseApp,
+      email,
+      password,
+      name,
+      username,
+      avatar = null
+    }) {
+      console.log(email, password, name, username, avatar)
+      const auth = getAuth(firebaseApp)
+      const result = await createUserWithEmailAndPassword(auth, email, password)
+
+      await this.createUser({ id: result.user.uid, email, name, username, avatar })
     }
   }
 })

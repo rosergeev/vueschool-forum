@@ -32,5 +32,6 @@ forumApp.use(FontAwesome)
 // })
 
 forumApp.component('AppDate', AppDate)
+forumApp.provide('firebaseApp', firebaseApp)
 
 forumApp.mount('#app')

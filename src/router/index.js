@@ -9,6 +9,7 @@ import NotFound from '@/pages/NotFound.vue'
 import Forum from '@/pages/Forum.vue'
 import Category from '@/pages/Category.vue'
 import Profile from '@/pages/Profile.vue'
+import Register from '@/pages/Register.vue'
 import { useAppStore } from '@/stores/AppStore'
 // import { findById } from '@/helpers'
 
@@ -83,6 +84,11 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register
     },
     {
       path: '/:pathMatch(.*)*',
