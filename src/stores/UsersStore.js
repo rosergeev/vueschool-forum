@@ -10,7 +10,7 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithPopup
   // signInWithRedirect
 } from 'firebase/auth'
 
@@ -18,7 +18,8 @@ export const useUsersStore = defineStore('UsersStore', {
   state: () => {
     return {
       users: [],
-      authId: null
+      authId: null,
+      authUserUnsubscribe: null
     }
   },
   getters: {
@@ -65,7 +66,9 @@ export const useUsersStore = defineStore('UsersStore', {
         return
       }
       this.authId = userId
-      return this.fetchUser(this.authId)
+      return fetchItem(this, 'users', this.authId, (unsubscribe) => {
+        this.setAuthUserUnsubscribe(unsubscribe)
+      })
     },
     async createUser({ id, email, name, username, avatar = null }) {
       const registeredAt = serverTimestamp()
@@ -108,13 +111,11 @@ export const useUsersStore = defineStore('UsersStore', {
       const response = await signInWithPopup(auth, provider)
       // const response = await signInWithRedirect(auth, provider)
       const user = response.user
-      console.log('user', user);
       const db = getFirestore()
       const userRef = doc(db, 'users', user.uid)
       const userDoc = await getDoc(userRef)
       console.log(`userDoc: ${JSON.stringify(userDoc.exists())}`)
       if (!userDoc.exists()) {
-        console.log('not exists');
         this.createUser({
           id: user.uid,
           name: user.displayName,
@@ -122,6 +123,15 @@ export const useUsersStore = defineStore('UsersStore', {
           username: user.email,
           avatar: user.photoURL
         })
+      }
+    },
+    setAuthUserUnsubscribe(unsubscribe) {
+      this.authUserUnsubscribe = unsubscribe
+    },
+    unsubscribeAuthUser() {
+      if (this.authUserUnsubscribe) {
+        this.authUserUnsubscribe()
+        this.setAuthUserUnsubscribe(null)
       }
     }
   }

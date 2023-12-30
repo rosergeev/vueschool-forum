@@ -37,7 +37,7 @@ const setItem = (store, resource, item) => {
   upsert(store[resource], docToResource(item))
 }
 
-const fetchItem = (store, resource, id) => {
+const fetchItem = (store, resource, id, handleUnsubscribe = null) => {
   const { appendUnsubsribe } = useAppStore()
   return new Promise((resolve) => {
     const db = getFirestore()
@@ -46,7 +46,11 @@ const fetchItem = (store, resource, id) => {
       setItem(store, resource, item)
       resolve(item)
     })
-    appendUnsubsribe(unsubscribe)
+    if (handleUnsubscribe) {
+      handleUnsubscribe(unsubscribe)
+    } else {
+      appendUnsubsribe(unsubscribe)
+    }
   })
 }
 
@@ -60,12 +64,4 @@ const docToResource = (doc) => {
   return { ...doc, id: doc.id }
 }
 
-export {
-  findById,
-  upsert,
-  makeAppendChildToParent,
-  setItem,
-  fetchItem,
-  fetchItems,
-  docToResource
-}
+export { findById, upsert, makeAppendChildToParent, setItem, fetchItem, fetchItems, docToResource }

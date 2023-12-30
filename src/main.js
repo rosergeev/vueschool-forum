@@ -24,9 +24,11 @@ forumApp.use(createPinia())
 forumApp.use(router)
 forumApp.use(FontAwesome)
 
-const { fetchAuthUser } = useUsersStore()
+const { fetchAuthUser, unsubscribeAuthUser } = useUsersStore()
 const auth = getAuth(firebaseApp)
+
 auth.onAuthStateChanged((user) => {
+  unsubscribeAuthUser()
   if (user) {
     fetchAuthUser(firebaseApp)
   }
