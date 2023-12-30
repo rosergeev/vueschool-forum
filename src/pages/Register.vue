@@ -30,6 +30,11 @@
           <button class="btn-blue btn-block" type="submit">Register</button>
         </div>
       </form>
+      <div class="text-center push-top">
+        <button class="btn-red btn-xsmall" @click="registerWithGoogle">
+          <i class="fa fa-google fa-btn"></i>Sign up with Google
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -45,7 +50,7 @@ const emit = defineEmits<{
   (e: 'ready'): void
 }>()
 
-const { registerUserWithEmailAndPassword } = useUsersStore()
+const { registerUserWithEmailAndPassword, signInWithGoogle } = useUsersStore()
 const router = useRouter()
 const firebaseApp = inject('firebaseApp') as FirebaseApp
 
@@ -59,6 +64,11 @@ const form = ref({
 
 const register = async () => {
   await registerUserWithEmailAndPassword({ firebaseApp, ...form.value })
+  router.push('/')
+}
+
+const registerWithGoogle = async () => {
+  await signInWithGoogle({ firebaseApp })
   router.push('/')
 }
 

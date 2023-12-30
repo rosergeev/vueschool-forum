@@ -8,7 +8,10 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   getAuth,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  // signInWithRedirect
 } from 'firebase/auth'
 
 export const useUsersStore = defineStore('UsersStore', {
@@ -98,6 +101,28 @@ export const useUsersStore = defineStore('UsersStore', {
     async signInWithEmailAndPassword({ firebaseApp, email, password }) {
       const auth = getAuth(firebaseApp)
       return await signInWithEmailAndPassword(auth, email, password)
+    },
+    async signInWithGoogle({ firebaseApp }) {
+      const auth = getAuth(firebaseApp)
+      const provider = new GoogleAuthProvider()
+      const response = await signInWithPopup(auth, provider)
+      // const response = await signInWithRedirect(auth, provider)
+      const user = response.user
+      console.log('user', user);
+      const db = getFirestore()
+      const userRef = doc(db, 'users', user.uid)
+      const userDoc = await getDoc(userRef)
+      console.log(`userDoc: ${JSON.stringify(userDoc.exists())}`)
+      if (!userDoc.exists()) {
+        console.log('not exists');
+        this.createUser({
+          id: user.uid,
+          name: user.displayName,
+          email: user.email,
+          username: user.email,
+          avatar: user.photoURL
+        })
+      }
     }
   }
 })

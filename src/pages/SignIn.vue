@@ -21,7 +21,7 @@
         </div>
       </form>
       <div class="push-top text-center">
-        <button class="btn-red btn-xsmall">
+        <button @click.prevent="signInWithGoogleLF" class="btn-red btn-xsmall">
           <i class="fa fa-google fa-btn"></i>Sign in with Google
         </button>
       </div>
@@ -34,7 +34,7 @@ import { ref, inject } from 'vue'
 import { useUsersStore } from '@/stores/UsersStore'
 import { useRouter } from 'vue-router'
 
-const { signInWithEmailAndPassword } = useUsersStore()
+const { signInWithEmailAndPassword, signInWithGoogle } = useUsersStore()
 const router = useRouter()
 const firebaseApp = inject('firebaseApp')
 
@@ -50,6 +50,11 @@ const signIn = async () => {
   } catch (error) {
     alert(error.message)
   }
+}
+
+const signInWithGoogleLF = async () => {
+  await signInWithGoogle({ firebaseApp })
+  router.push('/')
 }
 </script>
 
