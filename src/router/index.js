@@ -14,6 +14,9 @@ import SignIn from '@/pages/SignIn.vue'
 import { useAppStore } from '@/stores/AppStore'
 import { useUsersStore } from '@/stores/UsersStore'
 
+import { initializeApp } from 'firebase/app'
+import firebaseConfig from '@/config/firebase'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -99,6 +102,16 @@ const router = createRouter({
       path: '/signin',
       name: 'SignIn',
       component: SignIn
+    },
+    {
+      path: '/logout',
+      name: 'SignOut',
+      async beforeEnter(to, from) {
+        const firebaseApp = initializeApp(firebaseConfig)
+        const { signOut } = useUsersStore()
+        await signOut({ firebaseApp })
+        return { name: 'Home' }
+      }
     },
     {
       path: '/:pathMatch(.*)*',
