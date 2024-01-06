@@ -30,11 +30,7 @@ const router = createRouter({
       name: 'Profile',
       component: Profile,
       props: { edit: false },
-      meta: { toTop: true, smoothScroll: true },
-      beforeEnter: (to, from) => {
-        const { authId } = useUsersStore()
-        if (!authId) return { name: 'Home' }
-      }
+      meta: { toTop: true, smoothScroll: true, requiresAuth: true }
     },
     {
       path: '/me/edit',
@@ -127,8 +123,13 @@ const router = createRouter({
   }
 })
 
-router.beforeEach(() => {
+router.beforeEach((to, from) => {
+  console.log(`navigating to ${to.name} from ${from.name}`)
   const { unsubscribeAllSnapshots } = useAppStore()
   unsubscribeAllSnapshots()
+  if (to.meta.requiresAuth) {
+    const { authId } = useUsersStore()
+    if (!authId) return { name: 'Home' }
+  }
 })
 export default router

@@ -18,8 +18,8 @@ export const useUsersStore = defineStore('UsersStore', {
   state: () => {
     return {
       users: [],
-      authId: 'aOe7DPWjBJaNf3nXKX9dGFg3WEE3',
-      // authId: null,
+      // authId: 'aOe7DPWjBJaNf3nXKX9dGFg3WEE3',
+      authId: null,
       authUserUnsubscribe: null
     }
   },
