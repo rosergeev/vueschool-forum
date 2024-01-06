@@ -3,8 +3,9 @@
   <div class="container">
     <Suspense>
       <div class="container">
-        <RouterView v-show="showPage" @ready="onPageReady" />
-        <AppSpinner v-show="!showPage" />
+        <RouterView />
+        <!-- <RouterView v-show="showPage" @ready="onPageReady" /> -->
+        <!-- <AppSpinner v-show="!showPage" /> -->
         <!-- <div class="push-top" v-show="!showPage">loading...</div> -->
       </div>
     </Suspense>
@@ -16,7 +17,7 @@ import { RouterView, useRouter } from 'vue-router'
 import TheNavbar from './components/TheNavbar.vue'
 import { useUsersStore } from '@/stores/UsersStore'
 import { ref, inject } from 'vue'
-import AppSpinner from '@/components/AppSpinner.vue'
+// import AppSpinner from '@/components/AppSpinner.vue'
 import NProgress from 'nprogress'
 
 const showPage = ref(false)

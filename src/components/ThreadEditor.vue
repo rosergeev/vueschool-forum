@@ -16,7 +16,7 @@
       ></textarea>
     </div>
     <div class="btn-group">
-      <button class="btn btn-ghost" @click="cancel">Cancel:</button>
+      <button class="btn btn-ghost" @click.prevent="cancel">Cancel:</button>
       <button class="btn btn-blue" type="submit" name="Publish">
         {{ existing ? 'Update' : 'Publish' }}
       </button>
@@ -25,10 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const { title, text } = defineProps<{
-  title: string,
+  title: string
   text: string
 }>()
 
@@ -43,9 +43,12 @@ const emit = defineEmits<{
     }
   )
   (e: '@cancel')
+  (e: 'dirty')
+  (e: 'clean')
 }>()
 
 const save = () => {
+  emit('clean')
   emit('@save', { ...form.value })
 }
 
@@ -54,6 +57,21 @@ const cancel = () => {
 }
 
 const existing = computed(() => !!title)
+const computedFormToBeWatched = computed(() => Object.assign({}, form.value))
+
+watch(
+  computedFormToBeWatched,
+  (newForm, oldForm) => {
+    if (existing && !newForm.text && !newForm.title) {
+      emit('clean')
+    } else if (newForm.text !== oldForm.text || newForm.title !== oldForm.title) {
+      emit('dirty')
+    } else {
+      emit('clean')
+    }
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped></style>

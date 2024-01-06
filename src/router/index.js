@@ -12,7 +12,7 @@ import Profile from '@/pages/Profile.vue'
 import Register from '@/pages/Register.vue'
 import SignIn from '@/pages/SignIn.vue'
 import { useAppStore } from '@/stores/AppStore'
-// import { findById } from '@/helpers'
+import { useUsersStore } from '@/stores/UsersStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,7 +27,11 @@ const router = createRouter({
       name: 'Profile',
       component: Profile,
       props: { edit: false },
-      meta: { toTop: true, smoothScroll: true }
+      meta: { toTop: true, smoothScroll: true },
+      beforeEnter: (to, from) => {
+        const { authId } = useUsersStore()
+        if (!authId) return { name: 'Home' }
+      }
     },
     {
       path: '/me/edit',

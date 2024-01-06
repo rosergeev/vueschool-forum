@@ -18,7 +18,7 @@ export const useUsersStore = defineStore('UsersStore', {
   state: () => {
     return {
       users: [],
-      authId: null,
+      authId: 'aOe7DPWjBJaNf3nXKX9dGFg3WEE3',
       authUserUnsubscribe: null
     }
   },
@@ -114,7 +114,6 @@ export const useUsersStore = defineStore('UsersStore', {
       const db = getFirestore()
       const userRef = doc(db, 'users', user.uid)
       const userDoc = await getDoc(userRef)
-      console.log(`userDoc: ${JSON.stringify(userDoc.exists())}`)
       if (!userDoc.exists()) {
         this.createUser({
           id: user.uid,
