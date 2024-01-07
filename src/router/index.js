@@ -14,8 +14,7 @@ import SignIn from '@/pages/SignIn.vue'
 import { useAppStore } from '@/stores/AppStore'
 import { useUsersStore } from '@/stores/UsersStore'
 
-import { initializeApp } from 'firebase/app'
-import firebaseConfig from '@/config/firebase'
+import { firebaseApp } from '@/config/firebaseHelpers'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -103,7 +102,6 @@ const router = createRouter({
       path: '/logout',
       name: 'SignOut',
       async beforeEnter(to, from) {
-        const firebaseApp = initializeApp(firebaseConfig)
         const { signOut } = useUsersStore()
         await signOut({ firebaseApp })
         return { name: 'Home' }
@@ -123,12 +121,12 @@ const router = createRouter({
   }
 })
 
-router.beforeEach((to, from) => {
-  console.log(`navigating to ${to.name} from ${from.name}`)
+router.beforeEach(async (to, from) => {
+  const { authId, initAuthentication } = useUsersStore()
+  await initAuthentication({ firebaseApp })
   const { unsubscribeAllSnapshots } = useAppStore()
   unsubscribeAllSnapshots()
   if (to.meta.requiresAuth) {
-    const { authId } = useUsersStore()
     if (!authId) return { name: 'Home' }
   }
 })

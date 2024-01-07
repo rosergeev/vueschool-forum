@@ -20,7 +20,8 @@ export const useUsersStore = defineStore('UsersStore', {
       users: [],
       // authId: 'aOe7DPWjBJaNf3nXKX9dGFg3WEE3',
       authId: null,
-      authUserUnsubscribe: null
+      authUserUnsubscribe: null,
+      authObserverUnsubscribe: null
     }
   },
   getters: {
@@ -60,14 +61,14 @@ export const useUsersStore = defineStore('UsersStore', {
     fetchUsers(ids) {
       return fetchItems(this, 'users', ids)
     },
-    fetchAuthUser(firebaseApp) {
+    async fetchAuthUser(firebaseApp) {
       const auth = getAuth(firebaseApp)
       const userId = auth.currentUser?.uid
       if (!userId) {
         return
       }
       this.authId = userId
-      return fetchItem(this, 'users', this.authId, (unsubscribe) => {
+      await fetchItem(this, 'users', this.authId, (unsubscribe) => {
         this.setAuthUserUnsubscribe(unsubscribe)
       })
     },
@@ -133,6 +134,26 @@ export const useUsersStore = defineStore('UsersStore', {
         this.authUserUnsubscribe()
         this.setAuthUserUnsubscribe(null)
       }
+    },
+    initAuthentication({ firebaseApp }) {
+      if (this.authObserverUnsubscribe) this.authObserverUnsubscribe()
+      return new Promise((resolve) => {
+        const auth = getAuth(firebaseApp)
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+          console.log(`the user has changed`)
+          this.unsubscribeAuthUser()
+          if (user) {
+            await this.fetchAuthUser(firebaseApp)
+            resolve(user)
+          } else {
+            resolve(null)
+          }
+        })
+        this.setAuthObserverUnsubscribe(unsubscribe)
+      })
+    },
+    setAuthObserverUnsubscribe(unsubscribe) {
+      this.authObserverUnsubscribe = unsubscribe
     }
   }
 })

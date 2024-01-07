@@ -1,18 +1,14 @@
 import './assets/main.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-// Import the functions you need from the SDKs you need
-import { initializeApp } from 'firebase/app'
-import firebaseConfig from '@/config/firebase'
-import { getAuth } from 'firebase/auth'
+
 import FontAwesome from '@/plugins/FontAwesome'
-import { useUsersStore } from '@/stores/UsersStore'
+import { firebaseApp } from '@/config/firebaseHelpers'
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Initialize Firebase
-const firebaseApp = initializeApp(firebaseConfig)
 
 import App from '@/App.vue'
 import router from '@/router'
@@ -23,16 +19,6 @@ const forumApp = createApp(App)
 forumApp.use(createPinia())
 forumApp.use(router)
 forumApp.use(FontAwesome)
-
-const { fetchAuthUser, unsubscribeAuthUser } = useUsersStore()
-const auth = getAuth(firebaseApp)
-
-auth.onAuthStateChanged((user) => {
-  unsubscribeAuthUser()
-  if (user) {
-    fetchAuthUser(firebaseApp)
-  }
-})
 
 // const requireComponent = require.context('./components', true, /App[A-Z]\w+\.(vue|js)$/)
 // requireComponent.keys().forEach(function (fileName) {
