@@ -4,7 +4,6 @@ import { useUsersStore } from './UsersStore'
 import { makeAppendChildToParent } from '@/helpers'
 import { fetchItem, fetchItems, setItem } from '../helpers'
 import {
-  getFirestore,
   doc,
   collection,
   arrayUnion,
@@ -14,6 +13,7 @@ import {
   increment,
   updateDoc
 } from 'firebase/firestore'
+import { db } from '@/config/firebaseHelpers'
 
 export const usePostsStore = defineStore('PostsStore', {
   state: () => {
@@ -28,7 +28,6 @@ export const usePostsStore = defineStore('PostsStore', {
       post.userId = userStore.authId
       post.publishedAt = serverTimestamp()
 
-      const db = getFirestore()
       const batch = writeBatch(db)
       const postRef = doc(collection(db, 'posts'))
       const threadRef = doc(db, 'threads', post.threadId)
@@ -61,7 +60,6 @@ export const usePostsStore = defineStore('PostsStore', {
     },
     async updatePost({ text, id }) {
       const userStore = useUsersStore()
-      const db = getFirestore()
       const post = {
         text,
         edited: {

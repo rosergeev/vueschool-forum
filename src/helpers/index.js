@@ -1,5 +1,6 @@
-import { getFirestore, doc, onSnapshot } from 'firebase/firestore'
+import { doc, onSnapshot } from 'firebase/firestore'
 import { useAppStore } from '@/stores/AppStore'
+import { db } from '@/config/firebaseHelpers'
 // import { storeToRefs } from 'pinia'
 
 const findById = (resources, id) => {
@@ -40,7 +41,6 @@ const setItem = (store, resource, item) => {
 const fetchItem = (store, resource, id, handleUnsubscribe = null) => {
   const { appendUnsubsribe } = useAppStore()
   return new Promise((resolve) => {
-    const db = getFirestore()
     const unsubscribe = onSnapshot(doc(db, resource, id), (itemDoc) => {
       const item = { ...itemDoc.data(), id: itemDoc.id }
       setItem(store, resource, item)

@@ -13,6 +13,7 @@ import {
   signInWithPopup
   // signInWithRedirect
 } from 'firebase/auth'
+import { db } from '@/config/firebaseHelpers'
 
 export const useUsersStore = defineStore('UsersStore', {
   state: () => {
@@ -77,7 +78,6 @@ export const useUsersStore = defineStore('UsersStore', {
       const usernameLower = username.toLowerCase()
       email = email.toLowerCase()
       const user = { avatar, email, name, username, usernameLower, registeredAt }
-      const db = getFirestore()
       const userRef = doc(db, 'users', id)
       await setDoc(userRef, user)
       const newUser = await getDoc(userRef)
@@ -113,7 +113,6 @@ export const useUsersStore = defineStore('UsersStore', {
       const response = await signInWithPopup(auth, provider)
       // const response = await signInWithRedirect(auth, provider)
       const user = response.user
-      const db = getFirestore()
       const userRef = doc(db, 'users', user.uid)
       const userDoc = await getDoc(userRef)
       if (!userDoc.exists()) {

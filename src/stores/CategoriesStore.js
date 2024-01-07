@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { getFirestore, getDocs, collection } from 'firebase/firestore'
+import { getDocs, collection } from 'firebase/firestore'
 import { fetchItem, fetchItems, setItem } from '../helpers'
+import { db } from '@/config/firebaseHelpers'
 
 export const useCategoriesStore = defineStore('CategoriesStore', {
   state: () => {
@@ -12,7 +13,6 @@ export const useCategoriesStore = defineStore('CategoriesStore', {
   actions: {
     fetchAllCategories() {
       return new Promise((resolve) => {
-        const db = getFirestore()
         getDocs(collection(db, 'categories')).then((querySnapshot) => {
           const categories = querySnapshot.docs.map((docCat) => {
             const item = { id: docCat.id, ...docCat.data() }

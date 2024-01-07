@@ -13,6 +13,7 @@ import {
   serverTimestamp,
   writeBatch
 } from 'firebase/firestore'
+import { db } from '@/config/firebaseHelpers'
 
 export const useThreadsStore = defineStore('ThreadsStore', {
   state: () => {
@@ -54,7 +55,6 @@ export const useThreadsStore = defineStore('ThreadsStore', {
       const { appendThreadToUser } = userStore
       const { appendThreadToForum } = forumStore
 
-      const db = getFirestore()
       const batch = writeBatch(db)
       const threadRef = doc(collection(db, 'threads'))
       const thread = { forumId, title, publishedAt, userId, id: threadRef.id }
@@ -88,7 +88,6 @@ export const useThreadsStore = defineStore('ThreadsStore', {
       let newThread = { ...thread, title }
       let newPost = { ...post, text }
 
-      const db = getFirestore()
       const threadRef = doc(db, 'threads', id)
       const postRef = doc(db, 'posts', post.id)
       const batch = writeBatch(db)
