@@ -42,9 +42,13 @@ const fetchItem = (store, resource, id, handleUnsubscribe = null) => {
   const { appendUnsubsribe } = useAppStore()
   return new Promise((resolve) => {
     const unsubscribe = onSnapshot(doc(db, resource, id), (itemDoc) => {
-      const item = { ...itemDoc.data(), id: itemDoc.id }
-      setItem(store, resource, item)
-      resolve(item)
+      if (itemDoc.exists()) {
+        const item = { ...itemDoc.data(), id: itemDoc.id }
+        setItem(store, resource, item)
+        resolve(item)
+      } else {
+        resolve(null)
+      }
     })
     if (handleUnsubscribe) {
       handleUnsubscribe(unsubscribe)

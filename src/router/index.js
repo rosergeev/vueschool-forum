@@ -13,8 +13,11 @@ import Register from '@/pages/Register.vue'
 import SignIn from '@/pages/SignIn.vue'
 import { useAppStore } from '@/stores/AppStore'
 import { useUsersStore } from '@/stores/UsersStore'
+import { useThreadsStore } from '@/stores/ThreadsStore'
 
 import { firebaseApp } from '@/config/firebaseHelpers'
+import { storeToRefs } from 'pinia'
+import { findById } from '@/helpers'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -53,20 +56,24 @@ const router = createRouter({
       path: '/thread/:id',
       name: 'ThreadShow',
       component: ThreadShow,
-      props: true
-      // beforeEnter(to, from, next) {
-      //   const threadExists = findById(sourceData.threads, to.params.id)
-      //   if (threadExists) {
-      //     return next()
-      //   } else {
-      //     next({
-      //       name: 'NotFound',
-      //       params: { pathMatch: to.path.substring(1).split('/') },
-      //       query: to.query,
-      //       hash: to.hash
-      //     })
-      //   }
-      // }
+      props: true,
+      async beforeEnter(to, from, next) {
+        const { fetchThread } = useThreadsStore()
+        const { threads } = storeToRefs(useThreadsStore())
+        await fetchThread(to.params.id)
+        const threadExists = findById(threads.value, to.params.id)
+        console.log(threadExists);
+        if (threadExists) {
+          return next()
+        } else {
+          next({
+            name: 'NotFound',
+            params: { pathMatch: to.path.substring(1).split('/') },
+            query: to.query,
+            hash: to.hash
+          })
+        }
+      }
     },
     {
       path: '/forum/:forumId/thread/create',

@@ -9,7 +9,6 @@ import {
   collection,
   doc,
   getDoc,
-  getFirestore,
   serverTimestamp,
   writeBatch
 } from 'firebase/firestore'
