@@ -63,7 +63,7 @@ const router = createRouter({
         const { threads } = storeToRefs(useThreadsStore())
         await fetchThread(to.params.id)
         const threadExists = findById(threads.value, to.params.id)
-        console.log(threadExists);
+        console.log(threadExists)
         if (threadExists) {
           return next()
         } else {
@@ -101,12 +101,14 @@ const router = createRouter({
     {
       path: '/register',
       name: 'Register',
-      component: Register
+      component: Register,
+      meta: { requiresGuest: true }
     },
     {
       path: '/signin',
       name: 'SignIn',
-      component: SignIn
+      component: SignIn,
+      meta: { requiresGuest: true }
     },
     {
       path: '/logout',
@@ -132,12 +134,16 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
-  const { authId, initAuthentication } = useUsersStore()
+  const { initAuthentication } = useUsersStore()
+  const { authId } = storeToRefs(useUsersStore())
   await initAuthentication({ firebaseApp })
   const { unsubscribeAllSnapshots } = useAppStore()
   unsubscribeAllSnapshots()
   if (to.meta.requiresAuth) {
-    if (!authId) return { name: 'Home' }
+    if (!authId.value) return { name: 'SignIn' }
+  }
+  if (to.meta.requiresGuest && authId.value) {
+    return { name: 'Home' }
   }
 })
 export default router
