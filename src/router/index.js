@@ -140,7 +140,7 @@ router.beforeEach(async (to, from) => {
   const { unsubscribeAllSnapshots } = useAppStore()
   unsubscribeAllSnapshots()
   if (to.meta.requiresAuth) {
-    if (!authId.value) return { name: 'SignIn' }
+    if (!authId.value) return { name: 'SignIn', query: { redirectTo: to.path } }
   }
   if (to.meta.requiresGuest && authId.value) {
     return { name: 'Home' }

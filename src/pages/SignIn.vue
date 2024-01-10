@@ -32,10 +32,11 @@
 <script setup>
 import { ref, inject } from 'vue'
 import { useUsersStore } from '@/stores/UsersStore'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const { signInWithEmailAndPassword, signInWithGoogle } = useUsersStore()
 const router = useRouter()
+const route = useRoute()
 const firebaseApp = inject('firebaseApp')
 
 const form = ref({
@@ -46,7 +47,7 @@ const form = ref({
 const signIn = async () => {
   try {
     await signInWithEmailAndPassword({ firebaseApp, ...form.value })
-    router.push('/')
+    successRedirect()
   } catch (error) {
     alert(error.message)
   }
@@ -54,7 +55,12 @@ const signIn = async () => {
 
 const signInWithGoogleLF = async () => {
   await signInWithGoogle({ firebaseApp })
-  router.push('/')
+  successRedirect()
+}
+
+const successRedirect = () => {
+  const redirectTo = route.query.redirectTo || { name: 'Home' }
+  router.push(redirectTo)
 }
 </script>
 
