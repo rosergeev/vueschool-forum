@@ -3,6 +3,7 @@
     <h1>
       {{ thread.title }}
       <router-link
+        v-if="thread.userId === authUser?.id"
         :to="{ name: 'ThreadEdit', id: this.id }"
         class="btn-green btn-small"
         tag="button"
@@ -20,7 +21,15 @@
     </p>
     <post-list :posts="threadPosts" />
 
-    <post-editor @@save="addPost" :post="{ text: null }" />
+    <post-editor v-if="authUser" @@save="addPost" :post="{ text: null }" />
+    <div v-else class="text-center" style="margin-bottom: 50px">
+      <router-link :to="{ name: 'SignIn', query: { redirectTo: route.path } }">Sign In</router-link>
+      or
+      <router-link :to="{ name: 'Register', query: { redirecTo: route.path } }"
+        >Register</router-link
+      >
+      to reply
+    </div>
   </div>
   <!-- <div v-else class="col-full text-center">
       <h1>This thread does not exist</h1>
@@ -37,19 +46,23 @@ import { usePostsStore } from '../stores/PostsStore'
 import { useUsersStore } from '../stores/UsersStore'
 import { storeToRefs } from 'pinia'
 import useAsyncDataStatus from '@/composables/useAsyncDataStatus'
+import { useRoute } from 'vue-router'
 
 // import { useRoute } from 'vue-router'
 import { computed } from 'vue'
+import { query } from 'firebase/firestore'
 
 const threadsStore = useThreadsStore()
 const postsStore = usePostsStore()
 const usersStore = useUsersStore()
+const route = useRoute()
 
 const { ready, fetched } = useAsyncDataStatus()
 
 // const { posts } = storeToRefs(postsStore)
 const { fetchThread } = threadsStore
 const { fetchUser, fetchUsers } = usersStore
+const { authUser } = storeToRefs(usersStore)
 const { fetchPosts } = postsStore
 
 // const route = useRoute()
