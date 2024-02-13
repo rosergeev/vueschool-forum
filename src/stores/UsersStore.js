@@ -3,7 +3,16 @@ import { usePostsStore } from '@/stores/PostsStore'
 import { useThreadsStore } from '@/stores/ThreadsStore'
 import { findById, makeAppendChildToParent } from '@/helpers'
 import { docToResource, fetchItem, fetchItems, setItem } from '../helpers'
-import { doc, getDoc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  query,
+  where,
+  getDocs
+} from 'firebase/firestore'
 import {
   createUserWithEmailAndPassword,
   signOut,
@@ -153,6 +162,15 @@ export const useUsersStore = defineStore('UsersStore', {
     },
     setAuthObserverUnsubscribe(unsubscribe) {
       this.authObserverUnsubscribe = unsubscribe
+    },
+    async fetchAuthUsersPosts() {
+      const postsRef = collection(db, 'posts')
+      const q = query(postsRef, where('userId', '==', this.authId))
+      const querySnapshot = await getDocs(q)
+      querySnapshot.forEach((item) => {
+        console.log(`item: ${JSON.stringify(item.data())}`);
+        setItem(usePostsStore(), 'posts', item.data())
+      })
     }
   }
 })
