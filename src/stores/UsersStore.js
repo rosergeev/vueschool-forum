@@ -11,7 +11,8 @@ import {
   setDoc,
   query,
   where,
-  getDocs
+  getDocs,
+  updateDoc,
 } from 'firebase/firestore'
 import {
   createUserWithEmailAndPassword,
@@ -168,9 +169,24 @@ export const useUsersStore = defineStore('UsersStore', {
       const q = query(postsRef, where('userId', '==', this.authId))
       const querySnapshot = await getDocs(q)
       querySnapshot.forEach((item) => {
-        console.log(`item: ${JSON.stringify(item.data())}`);
+        console.log(`item: ${JSON.stringify(item.data())}`)
         setItem(usePostsStore(), 'posts', item.data())
       })
+    },
+    async updateUser(user) {
+      const updates = {
+        avatar: user.avatar || null,
+        username: user.username || null,
+        name: user.name || null,
+        bio: user.bio || null,
+        website: user.website || null,
+        email: user.email || null,
+        location: user.location || null
+      }
+
+      const userRef = doc(db, 'users', user.id)
+      await updateDoc(userRef, updates)
+      setItem(this, 'users', { ...user })
     }
   }
 })

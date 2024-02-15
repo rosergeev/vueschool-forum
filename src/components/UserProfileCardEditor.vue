@@ -79,10 +79,10 @@ const { user } = defineProps<{
 }>()
 const activeUser = { ...user }
 const router = useRouter()
+const { updateUser } = useUsersStore()
 
-const save = () => {
-  setItem(useUsersStore(), 'users', { ...activeUser })
-  // setUser({ ...activeUser })
+const save = async () => {
+  await updateUser(activeUser)
   router.push({ name: 'Profile' })
 }
 const cancel = () => {

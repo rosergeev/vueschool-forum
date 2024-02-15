@@ -3,7 +3,7 @@
   <div class="container">
     <Suspense>
       <div class="container">
-        <RouterView />
+        <RouterView :key="path" />
         <!-- <RouterView v-show="showPage" @ready="onPageReady" /> -->
         <!-- <AppSpinner v-show="!showPage" /> -->
         <!-- <div class="push-top" v-show="!showPage">loading...</div> -->
@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { RouterView, useRouter } from 'vue-router'
+import { RouterView, useRouter, useRoute } from 'vue-router'
 import TheNavbar from './components/TheNavbar.vue'
 import { useUsersStore } from '@/stores/UsersStore'
 import { ref, inject } from 'vue'
@@ -25,6 +25,8 @@ const showPage = ref(false)
 const userStore = useUsersStore()
 const { fetchAuthUser } = userStore
 const firebaseApp = inject('firebaseApp')
+const { beforeEach } = useRouter()
+const { path } = useRoute()
 
 const initDBData = async () => {
   NProgress.configure({
@@ -37,7 +39,7 @@ const initDBData = async () => {
 
 initDBData()
 
-useRouter().beforeEach(() => {
+beforeEach(() => {
   NProgress.start()
 })
 
