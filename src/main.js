@@ -5,6 +5,7 @@ import { createPinia } from 'pinia'
 import FontAwesome from '@/plugins/FontAwesome'
 import { firebaseApp } from '@/config/firebaseHelpers'
 import ClickOutsideDirective from '@/plugins/ClickOutsideDirective'
+import PageScrollDirective from '@/plugins/PageScrollDirective'
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -21,6 +22,7 @@ forumApp.use(createPinia())
 forumApp.use(router)
 forumApp.use(FontAwesome)
 forumApp.use(ClickOutsideDirective)
+forumApp.use(PageScrollDirective)
 
 // const requireComponent = require.context('./components', true, /App[A-Z]\w+\.(vue|js)$/)
 // requireComponent.keys().forEach(function (fileName) {
